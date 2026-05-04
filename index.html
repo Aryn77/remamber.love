@@ -237,14 +237,11 @@ nav.scrolled{border-color:var(--border);background:rgba(8,8,8,.88);backdrop-filt
 .music-song-artist{font-size:.82rem;color:var(--muted);}
 .music-tip{font-size:.72rem;color:var(--muted2);margin-top:8px;line-height:1.5;}
 
-/* NetEase 跳转按钮 */
-.netease-play-btn{display:none;align-items:center;gap:14px;margin-top:20px;padding:16px 24px;background:linear-gradient(135deg,rgba(212,255,0,.08),rgba(212,255,0,.04));border:1px solid rgba(212,255,0,.2);border-radius:16px;color:var(--lime);text-decoration:none;font-size:.9rem;font-weight:600;letter-spacing:.04em;transition:all .25s;cursor:pointer;}
-.netease-play-btn.show{display:flex;}
-.netease-play-btn:hover{background:linear-gradient(135deg,rgba(212,255,0,.15),rgba(212,255,0,.08));border-color:rgba(212,255,0,.4);transform:translateY(-2px);}
-.netease-btn-icon{font-size:1rem;}
-.netease-btn-text{flex:1;}
-.netease-btn-arrow{font-size:1.1rem;transition:transform .2s;}
-.netease-play-btn:hover .netease-btn-arrow{transform:translateX(4px);}
+/* NetEase Player embed */
+.netease-player-wrap{margin-top:20px;border-radius:16px;overflow:hidden;display:none;flex-direction:column;background:#0a0a0a;border:1px solid var(--border);}
+.netease-player-wrap.show{display:flex;}
+.netease-player-wrap iframe{width:100%;display:block;border:none;}
+.netease-hint{font-size:.72rem;color:var(--muted);padding:8px 16px 10px;text-align:center;letter-spacing:.05em;}
 
 /* Playlist */
 .playlist{display:flex;flex-direction:column;gap:4px;margin-top:8px;}
@@ -665,12 +662,11 @@ footer{border-top:1px solid var(--border);}
       </div>
     </div>
 
-    <!-- 网易云 跳转按钮 -->
-    <a class="netease-play-btn" id="netease-btn" href="#" target="_blank" rel="noopener">
-      <span class="netease-btn-icon">▶</span>
-      <span class="netease-btn-text">在网易云音乐中播放</span>
-      <span class="netease-btn-arrow">→</span>
-    </a>
+    <!-- 网易云 Player -->
+    <div class="netease-player-wrap" id="netease-wrap">
+      <iframe id="netease-frame" src="" width="100%" height="86" scrolling="no" frameborder="no" allow="autoplay"></iframe>
+      <div class="netease-hint">▲ 点击上方播放条中的 ▶ 按钮开始播放</div>
+    </div>
 
     <!-- Playlist -->
     <div class="playlist" id="playlist"></div>
@@ -1146,10 +1142,14 @@ function playSong(i){
   document.getElementById('music-tip').textContent='';
   document.getElementById('now-playing').classList.add('active');
 
-  // 网易云跳转按钮
-  const btn=document.getElementById('netease-btn');
-  btn.href=`https://music.163.com/#/song?id=${s.neteaseId}`;
-  btn.classList.add('show');
+  // 加载网易云播放器
+  const wrap=document.getElementById('netease-wrap');
+  const frame=document.getElementById('netease-frame');
+  frame.src='';
+  wrap.classList.add('show');
+  setTimeout(()=>{
+    frame.src=`https://music.163.com/outchain/player?type=2&id=${s.neteaseId}&auto=1&height=66`;
+  },50);
 }
 
 buildPlaylist();
