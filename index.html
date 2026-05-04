@@ -897,21 +897,21 @@ const PLAYLIST = [
     title: '幸福回忆',
     artist: 'Phum Viphurit / 阿克江Akin',
     tag: '感动',
-    neteaseId: '2071977897'   // ← 请到网易云确认并替换
+    neteaseId: '2719710431'
   },
   {
     emoji: '🚒',
-    title: '恋爱救火车',
+    title: '爱恋救火车',
     artist: '阿克江Akin',
     tag: '甜蜜',
-    neteaseId: '1372554118'   // ← 请到网易云确认并替换
+    neteaseId: '2726209486'
   },
   {
     emoji: '💗',
     title: '粉红泡泡女孩',
     artist: '白天不亮Gavintoo / 阿克江Akin',
     tag: '浪漫',
-    neteaseId: '1472485669'   // ← 请到网易云确认并替换
+    neteaseId: '1462313615'
   },
 ];
 // ══════════════════════════════════════════════
@@ -1145,7 +1145,7 @@ function playSong(i){
   const frame=document.getElementById('netease-frame');
   wrap.classList.add('show');
   // auto=1 自动播放，height=86 显示完整播放条
-  frame.src=`//music.163.com/outchain/player?type=2&id=${s.neteaseId}&auto=1&height=66`;
+  frame.src=`https://music.163.com/outchain/player?type=2&id=${s.neteaseId}&auto=1&height=66`;
 }
 
 buildPlaylist();
