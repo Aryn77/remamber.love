@@ -591,6 +591,7 @@ footer{border-top:1px solid var(--border);}
 
 <!-- HERO -->
 <section id="hero">
+  <canvas id="heart-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
   <div class="hero-bg-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-glow2"></div>
@@ -1758,6 +1759,110 @@ function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
+
+// ══════════════════════════════════════════════
+//  QUANTUM HEART — 量子爱心心跳动画
+// ══════════════════════════════════════════════
+(function heartAnim(){
+  const canvas=document.getElementById('heart-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let W,H,cx,cy,sc;
+
+  function resize(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+    cx=W*0.72; cy=H*0.5;
+    sc=Math.min(W,H)*0.019;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  // 参数心形方程
+  function hx(t){return 16*Math.pow(Math.sin(t),3);}
+  function hy(t){return -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));}
+
+  // 生成粒子
+  const TOTAL=260;
+  const pts=[];
+  for(let i=0;i<TOTAL;i++){
+    const t=Math.random()*Math.PI*2;
+    const onEdge=i<170;
+    const r=onEdge?(0.88+Math.random()*0.12):(Math.random()*0.82);
+    pts.push({
+      hx:hx(t)*r, hy:hy(t)*r,
+      x:cx+(Math.random()-.5)*300,
+      y:cy+(Math.random()-.5)*300,
+      sz:onEdge?(Math.random()*1.4+0.5):(Math.random()*0.9+0.3),
+      ba:onEdge?(Math.random()*.5+.35):(Math.random()*.3+.15),
+      spd:0.025+Math.random()*0.025,
+      ph:Math.random()*Math.PI*2,
+      jx:(Math.random()-.5)*2.4,
+      jy:(Math.random()-.5)*2.4,
+      jf:0.4+Math.random()*2.2,
+    });
+  }
+
+  // 心跳节奏函数（lub-dub）
+  let clock=0;
+  function beat(t){
+    const period=2.0;
+    const c=(t%period)/period;
+    if(c<0.07) return Math.sin(c/0.07*Math.PI);        // 主跳
+    if(c<0.14) return .45*Math.sin((c-.07)/.07*Math.PI);// 回弹
+    return 0;
+  }
+
+  function draw(){
+    requestAnimationFrame(draw);
+    ctx.clearRect(0,0,W,H);
+    clock+=0.016;
+    const pulse=beat(clock);
+    const bs=1+pulse*0.2;
+
+    // 心形中心辉光
+    if(pulse>0.04){
+      const g=ctx.createRadialGradient(cx,cy-sc*.5,0,cx,cy-sc*.5,sc*14*bs);
+      g.addColorStop(0,`rgba(255,77,109,${pulse*.18})`);
+      g.addColorStop(.5,`rgba(255,77,109,${pulse*.06})`);
+      g.addColorStop(1,'rgba(255,77,109,0)');
+      ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    }
+
+    pts.forEach(p=>{
+      const jx=p.jx*Math.sin(clock*p.jf+p.ph)*1.6;
+      const jy=p.jy*Math.cos(clock*p.jf*.7+p.ph)*1.6;
+      const tx=cx+p.hx*sc*bs+jx;
+      const ty=cy+p.hy*sc*bs+jy;
+      p.x+=(tx-p.x)*p.spd;
+      p.y+=(ty-p.y)*p.spd;
+
+      const twk=.55+.45*Math.sin(clock*2.8+p.ph);
+      const a=Math.min(1,p.ba*twk*(1+pulse*.5));
+      const sz=p.sz*(1+pulse*.35);
+
+      // 外晕
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,sz*3,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,77,109,${a*.12})`;
+      ctx.fill();
+      // 中晕
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,sz*1.6,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,110,140,${a*.3})`;
+      ctx.fill();
+      // 核心
+      const r=Math.round(255);
+      const g2=Math.round(77+pulse*50);
+      const b=Math.round(109+pulse*40);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,sz,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${r},${g2},${b},${a})`;
+      ctx.fill();
+    });
+  }
+  draw();
+})();
 
 // ══════════════════════════════════════════════
 //  INIT — load all dynamic content
