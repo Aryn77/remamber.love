@@ -432,6 +432,56 @@ footer{border-top:1px solid var(--border);}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--white);color:var(--bg);padding:13px 24px;border-radius:100px;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;z-index:1000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 
+/* ADMIN EDIT BUTTON */
+.admin-edit-fab{position:fixed;bottom:90px;right:28px;z-index:900;background:var(--accent);color:white;border:none;width:48px;height:48px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,77,109,.4);transition:transform .2s;}
+.admin-edit-fab:hover{transform:scale(1.1);}
+.admin-edit-fab.visible{display:flex;}
+.edit-btn{display:none;position:absolute;top:8px;right:8px;background:rgba(255,77,109,.9);color:white;border:none;border-radius:8px;padding:4px 10px;font-size:.7rem;font-weight:700;cursor:pointer;z-index:10;letter-spacing:.05em;}
+.admin-mode .edit-btn{display:block;}
+.del-btn{display:none;position:absolute;top:8px;right:60px;background:rgba(255,50,50,.85);color:white;border:none;border-radius:8px;padding:4px 10px;font-size:.7rem;font-weight:700;cursor:pointer;z-index:10;letter-spacing:.05em;}
+.admin-mode .del-btn{display:block;}
+
+/* CONTENT EDIT MODAL */
+.cedit-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.cedit-modal.open{opacity:1;pointer-events:all;}
+.cedit-box{width:min(480px,92vw);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:16px;}
+.cedit-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--white);}
+.cedit-label{font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.cedit-input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s;}
+.cedit-input:focus{border-color:var(--accent);}
+.cedit-textarea{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.9rem;outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
+.cedit-textarea:focus{border-color:var(--accent);}
+.cedit-btns{display:flex;gap:10px;justify-content:flex-end;}
+.cedit-btn{padding:10px 22px;border-radius:100px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.cedit-btn.primary{background:var(--accent);color:white;}
+.cedit-btn.secondary{background:var(--bg2);color:var(--muted);border:1px solid var(--border);}
+
+/* COMMENTS */
+#comments{padding:80px 40px;border-top:1px solid var(--border);max-width:800px;margin:0 auto;}
+.comments-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.comments-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:var(--white);letter-spacing:-.03em;margin-bottom:32px;}
+.comments-title span{color:var(--accent);}
+.comment-form{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:40px;display:flex;flex-direction:column;gap:14px;}
+.comment-form input,.comment-form textarea{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;transition:border-color .2s;width:100%;}
+.comment-form input:focus,.comment-form textarea:focus{border-color:var(--accent);}
+.comment-form textarea{resize:none;min-height:80px;}
+.comment-submit{align-self:flex-end;background:var(--accent);color:white;border:none;border-radius:100px;padding:10px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
+.comment-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,77,109,.3);}
+.comments-list{display:flex;flex-direction:column;gap:16px;}
+.comment-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;}
+.comment-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.comment-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:var(--white);}
+.comment-time{font-size:.7rem;color:var(--muted);letter-spacing:.05em;}
+.comment-text{font-size:.9rem;color:var(--muted);line-height:1.7;}
+.comments-empty{text-align:center;color:var(--muted);font-size:.88rem;padding:40px 0;}
+
+/* MUSIC play overlay */
+.netease-player-wrap{position:relative;}
+.music-play-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,255,0,.12),rgba(212,255,0,.06));border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;gap:12px;color:var(--lime);font-weight:700;font-size:.95rem;letter-spacing:.06em;transition:opacity .3s;}
+.music-play-overlay:hover{background:linear-gradient(135deg,rgba(212,255,0,.2),rgba(212,255,0,.1));}
+.music-play-overlay.hidden{opacity:0;pointer-events:none;}
+.music-play-icon{width:40px;height:40px;border-radius:50%;border:2px solid var(--lime);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+
 /* STORY MODAL */
 .story-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
 .story-modal.open{opacity:1;pointer-events:all;}
@@ -568,17 +618,10 @@ footer{border-top:1px solid var(--border);}
 <!-- STORIES -->
 <section id="stories">
   <div class="stories-header">
-    <div class="stories-hd-left"><span class="stories-label">Stories</span><span class="stories-count-badge">6</span></div>
-    <span class="stories-see-all">全部回忆 →</span>
+    <div class="stories-hd-left"><span class="stories-label">Stories</span><span class="stories-count-badge" id="stories-count">6</span></div>
+    <span class="stories-see-all admin-only" style="display:none" onclick="addStory()">＋ 添加</span>
   </div>
-  <div class="stories-row">
-    <div class="story-item" data-color="red" onclick="openStory(0)"><div class="story-ring-wrap"><div class="story-ring-glow"></div><div class="story-ring"><div class="story-inner">☕</div></div></div><div class="story-label">初次相遇</div></div>
-    <div class="story-item" data-color="blue" onclick="openStory(1)"><div class="story-ring-wrap"><div class="story-ring-glow"></div><div class="story-ring"><div class="story-inner">🌊</div></div></div><div class="story-label">第一次旅行</div></div>
-    <div class="story-item" data-color="amber" onclick="openStory(2)"><div class="story-ring-wrap"><div class="story-ring-glow"></div><div class="story-ring"><div class="story-inner">🎂</div></div></div><div class="story-label">你的生日</div></div>
-    <div class="story-item" data-color="purple" onclick="openStory(3)"><div class="story-ring-wrap"><div class="story-ring-glow"></div><div class="story-ring"><div class="story-inner">🌙</div></div></div><div class="story-label">深夜聊天</div></div>
-    <div class="story-item" data-color="green" onclick="openStory(4)"><div class="story-ring-wrap"><div class="story-ring-glow"></div><div class="story-ring"><div class="story-inner">🎵</div></div></div><div class="story-label">我们的歌</div></div>
-    <div class="story-item" data-color="lime" onclick="openStory(5)"><div class="story-ring-wrap"><div class="story-ring-glow"></div><div class="story-ring"><div class="story-inner">🐾</div></div></div><div class="story-label">日常碎碎念</div></div>
-  </div>
+  <div class="stories-row" id="stories-row"></div>
 </section>
 
 <!-- GALLERY -->
@@ -664,8 +707,11 @@ footer{border-top:1px solid var(--border);}
 
     <!-- 网易云 Player -->
     <div class="netease-player-wrap" id="netease-wrap">
-      <iframe id="netease-frame" src="" width="100%" height="86" scrolling="no" frameborder="no" allow="autoplay"></iframe>
-      <div class="netease-hint">▲ 点击上方播放条中的 ▶ 按钮开始播放</div>
+      <div class="music-play-overlay" id="music-overlay" onclick="startPlay()">
+        <div class="music-play-icon">▶</div>
+        <span>点我开始播放</span>
+      </div>
+      <iframe id="netease-frame" src="" width="100%" height="86" scrolling="no" frameborder="no" allow="autoplay *; encrypted-media *"></iframe>
     </div>
 
     <!-- Playlist -->
@@ -679,22 +725,6 @@ footer{border-top:1px solid var(--border);}
     <div><div class="feed-title-sub">recent posts</div><h2 class="feed-title">feed<span>.</span></h2></div>
   </div>
   <div id="dynamic-feed"></div>
-  <div class="feed-post">
-    <div class="post-inner">
-      <div class="post-header"><div class="post-avatar">你</div><div class="post-meta"><div class="post-author">ndn</div><div class="post-time">3 days ago · 深夜碎念</div></div><div class="post-more">···</div></div>
-      <div class="post-visual pc1"><div style="font-size:4.5rem">🌙</div><div class="post-badge">night vibes</div></div>
-      <div class="post-actions"><button class="action-btn" onclick="toggleLike(this)"><span class="icon">♡</span>42</button><button class="action-btn"><span class="icon">💬</span>7</button><div class="post-spacer"></div><button class="post-share-btn">Share ↗</button></div>
-      <div class="post-caption"><strong>ndn</strong> 凌晨三点你发来一个"在吗"，我秒回，然后我们聊到天亮。那条对话框里装了很多东西，我一直没删。 <span class="tag">#深夜 #就是喜欢你</span></div>
-    </div>
-  </div>
-  <div class="feed-post">
-    <div class="post-inner">
-      <div class="post-header"><div class="post-avatar b">我</div><div class="post-meta"><div class="post-author">Aryn</div><div class="post-time">1 week ago · 日常</div></div><div class="post-more">···</div></div>
-      <div class="post-visual pc2"><div style="font-size:4.5rem">☀️</div><div class="post-badge">golden hour</div></div>
-      <div class="post-actions"><button class="action-btn liked"><span class="icon">♥</span>68</button><button class="action-btn"><span class="icon">💬</span>12</button><div class="post-spacer"></div><button class="post-share-btn">Share ↗</button></div>
-      <div class="post-caption"><strong>Aryn</strong> 今天日落特别好看，你不在，但我拍了，发给你，你说"下次带我去"。好，下次。 <span class="tag">#日落 #约定</span></div>
-    </div>
-  </div>
 </section>
 
 <!-- WRITE -->
@@ -804,6 +834,46 @@ footer{border-top:1px solid var(--border);}
     </a>
   </div>
 </section>
+
+<!-- COMMENTS -->
+<section id="comments">
+  <div class="comments-eyebrow">Guest Book</div>
+  <h2 class="comments-title">留下你的<span>足迹</span></h2>
+  <div class="comment-form">
+    <input type="text" id="c-name" placeholder="你的名字" maxlength="20">
+    <textarea id="c-text" placeholder="说点什么...留下你来过的痕迹 ✦" maxlength="200"></textarea>
+    <button class="comment-submit" onclick="submitComment()">留言 ✦</button>
+  </div>
+  <div class="comments-list" id="comments-list">
+    <div class="comments-empty">还没有留言，成为第一个 ✦</div>
+  </div>
+</section>
+
+<!-- CONTENT EDIT MODAL -->
+<div class="cedit-modal" id="cedit-modal">
+  <div class="cedit-box">
+    <div class="cedit-title" id="cedit-modal-title">编辑内容</div>
+    <div>
+      <div class="cedit-label">Emoji / 图标</div>
+      <input class="cedit-input" type="text" id="cedit-emoji" placeholder="☕">
+    </div>
+    <div>
+      <div class="cedit-label">标题</div>
+      <input class="cedit-input" type="text" id="cedit-title-input" placeholder="标题">
+    </div>
+    <div>
+      <div class="cedit-label">描述 / 正文</div>
+      <textarea class="cedit-textarea" id="cedit-desc" placeholder="描述内容..."></textarea>
+    </div>
+    <div class="cedit-btns">
+      <button class="cedit-btn secondary" onclick="closeCedit()">取消</button>
+      <button class="cedit-btn primary" onclick="saveCedit()">保存 ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN FAB -->
+<button class="admin-edit-fab" id="admin-fab" title="管理员模式已开启" onclick="toggleAdminPanel()">✏️</button>
 
 <!-- TICKER -->
 <div class="ticker-strip">
@@ -964,18 +1034,129 @@ function updateTimer(){
 updateTimer();
 setInterval(updateTimer,1000);
 
-// STORIES
-const storiesData=[
-  {emoji:'☕',title:'第一次见面',desc:'阳光刚刚好，你走进来的样子，我就知道这个人不一样。那杯咖啡还没喝完，我就已经喜欢你了。'},
-  {emoji:'🌊',title:'我们的海',desc:'坐了四小时高铁，到站天黑了，我们还是跑去海边，光脚踩沙子。盐的味道，风的声音，还有你。'},
-  {emoji:'🎂',title:'你给我做的蛋糕',desc:'不知道你在厨房折腾了多久，端出来歪歪斜斜，奶油涂得像抽象画，但那是我吃过最好吃的蛋糕。'},
-  {emoji:'🌙',title:'深夜的对话框',desc:'凌晨三点你发来"在吗"，我秒回。那条对话框里装了很多东西，我一直没删。'},
-  {emoji:'🎵',title:'我们的歌',desc:'咖啡店随机放到那首歌，我们对视了一眼，都笑了。这首歌以后就是我们的了。'},
-  {emoji:'🐾',title:'平凡的日子',desc:'不说话也好，就这样并肩，树影斑驳，风很温柔。平凡的日子就是最好的日子。'},
+// ══════════════════════════════════════════════
+//  ADMIN MODE
+// ══════════════════════════════════════════════
+function confirmAdmin(){
+  const pw=document.getElementById('admin-pw-input').value.trim();
+  if(ADMIN_PASSWORDS.includes(pw)){
+    adminUnlocked=true;
+    closeAdminModal();
+    document.getElementById('admin-fab').classList.add('visible');
+    document.body.classList.add('admin-mode');
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
+    renderPosts(postsData); // re-render feed to show edit/del buttons
+    if(adminAction==='upload') document.getElementById('photo-upload-input').click();
+    else if(adminAction==='post'){ adminAction='upload'; submitPost(); }
+  } else {
+    document.getElementById('admin-error').textContent='密码不对，再试试 🔒';
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+let adminAction='upload';
+function requestAdminUpload(){
+  adminAction='upload';
+  document.getElementById('admin-pw-input').value='';
+  document.getElementById('admin-error').textContent='';
+  document.getElementById('admin-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
+}
+function toggleAdminPanel(){showToast(adminUnlocked?'管理员模式已开启 ✏️':'请先登录');}
+
+// ══════════════════════════════════════════════
+//  STORIES — Firebase 同步，admin 可编辑
+const DEFAULT_STORIES=[
+  {emoji:'☕',title:'第一次见面',desc:'阳光刚刚好，你走进来的样子，我就知道这个人不一样。那杯咖啡还没喝完，我就已经喜欢你了。',color:'red'},
+  {emoji:'🌊',title:'我们的海',desc:'坐了四小时高铁，到站天黑了，我们还是跑去海边，光脚踩沙子。盐的味道，风的声音，还有你。',color:'blue'},
+  {emoji:'🎂',title:'你给我做的蛋糕',desc:'不知道你在厨房折腾了多久，端出来歪歪斜斜，奶油涂得像抽象画，但那是我吃过最好吃的蛋糕。',color:'amber'},
+  {emoji:'🌙',title:'深夜的对话框',desc:'凌晨三点你发来"在吗"，我秒回。那条对话框里装了很多东西，我一直没删。',color:'purple'},
+  {emoji:'🎵',title:'我们的歌',desc:'咖啡店随机放到那首歌，我们对视了一眼，都笑了。这首歌以后就是我们的了。',color:'green'},
+  {emoji:'🐾',title:'平凡的日子',desc:'不说话也好，就这样并肩，树影斑驳，风很温柔。平凡的日子就是最好的日子。',color:'lime'},
 ];
+let storiesData=[];
 let storyTimer;
+const STORY_COLORS=['red','blue','amber','purple','green','lime'];
+
+function renderStories(list){
+  storiesData=list;
+  const row=document.getElementById('stories-row');
+  document.getElementById('stories-count').textContent=list.length;
+  row.innerHTML=list.map((d,i)=>`
+    <div class="story-item" data-color="${d.color||STORY_COLORS[i%6]}" style="position:relative">
+      <div class="story-ring-wrap" onclick="openStory(${i})">
+        <div class="story-ring-glow"></div>
+        <div class="story-ring"><div class="story-inner">${d.emoji}</div></div>
+      </div>
+      <div class="story-label">${d.title}</div>
+      <button class="edit-btn" onclick="editStory('${d.id||i}',${i})">✏️</button>
+    </div>`).join('');
+}
+
+function loadStories(){
+  if(USE_FIREBASE){
+    db.collection('stories').orderBy('order').onSnapshot(snap=>{
+      const list=snap.docs.map(d=>({id:d.id,...d.data()}));
+      if(list.length===0){seedStories();}
+      else renderStories(list);
+    },()=>renderStories(DEFAULT_STORIES));
+  } else {
+    renderStories(DEFAULT_STORIES);
+  }
+}
+async function seedStories(){
+  const batch=db.batch();
+  DEFAULT_STORIES.forEach((s,i)=>{
+    const ref=db.collection('stories').doc();
+    batch.set(ref,{...s,order:i});
+  });
+  await batch.commit();
+}
+
+// Edit story modal
+let ceditTarget=null,ceditType='story';
+function editStory(id,idx){
+  if(!adminUnlocked){showToast('请先输入管理员密码');return;}
+  ceditType='story';ceditTarget={id,idx};
+  const d=storiesData[idx];
+  document.getElementById('cedit-modal-title').textContent='编辑故事';
+  document.getElementById('cedit-emoji').value=d.emoji||'';
+  document.getElementById('cedit-title-input').value=d.title||'';
+  document.getElementById('cedit-desc').value=d.desc||'';
+  document.getElementById('cedit-modal').classList.add('open');
+}
+function addStory(){
+  if(!adminUnlocked){showToast('请先输入管理员密码');return;}
+  ceditType='story-new';ceditTarget=null;
+  document.getElementById('cedit-modal-title').textContent='添加新故事';
+  document.getElementById('cedit-emoji').value='';
+  document.getElementById('cedit-title-input').value='';
+  document.getElementById('cedit-desc').value='';
+  document.getElementById('cedit-modal').classList.add('open');
+}
+function closeCedit(){document.getElementById('cedit-modal').classList.remove('open');}
+async function saveCedit(){
+  const emoji=document.getElementById('cedit-emoji').value.trim();
+  const title=document.getElementById('cedit-title-input').value.trim();
+  const desc=document.getElementById('cedit-desc').value.trim();
+  if(!title&&ceditType!=='post'){showToast('请填写标题');return;}
+  if(ceditType==='story'&&USE_FIREBASE&&ceditTarget.id){
+    await db.collection('stories').doc(ceditTarget.id).update({emoji,title,desc});
+  } else if(ceditType==='story-new'&&USE_FIREBASE){
+    await db.collection('stories').add({emoji,title,desc,color:STORY_COLORS[storiesData.length%6],order:storiesData.length});
+  } else if(ceditType==='post'&&USE_FIREBASE&&ceditTarget.id){
+    await db.collection('posts').doc(ceditTarget.id).update({emoji,content:desc,tag:title});
+  } else if(ceditType==='story'){
+    // local fallback
+    DEFAULT_STORIES[ceditTarget.idx]={...DEFAULT_STORIES[ceditTarget.idx],emoji,title,desc};
+    renderStories(DEFAULT_STORIES);
+  }
+  closeCedit();showToast('已保存 ✓');
+}
+
 function openStory(i){
-  const d=storiesData[i];
+  const d=storiesData[i]||DEFAULT_STORIES[i];
+  if(!d)return;
   document.getElementById('s-emoji').textContent=d.emoji;
   document.getElementById('s-title').textContent=d.title;
   document.getElementById('s-desc').textContent=d.desc;
@@ -993,26 +1174,7 @@ function closeStoryBtn(){document.getElementById('story-modal').classList.remove
 // ══════════════════════════════════════════════
 let adminUnlocked=false;
 let photoUploadCallback=null;
-
-function requestAdminUpload(){
-  document.getElementById('admin-pw-input').value='';
-  document.getElementById('admin-error').textContent='';
-  document.getElementById('admin-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
-}
 function closeAdminModal(){document.getElementById('admin-modal').classList.remove('open');}
-function confirmAdmin(){
-  const pw=document.getElementById('admin-pw-input').value.trim();
-  if(ADMIN_PASSWORDS.includes(pw)){
-    adminUnlocked=true;
-    closeAdminModal();
-    document.getElementById('photo-upload-input').click();
-  } else {
-    document.getElementById('admin-error').textContent='密码不对，再试试 🔒';
-    document.getElementById('admin-pw-input').value='';
-    document.getElementById('admin-pw-input').focus();
-  }
-}
 
 // Photo data store
 let localPhotos=JSON.parse(localStorage.getItem('us_photos')||'[]');
@@ -1141,15 +1303,22 @@ function playSong(i){
   document.getElementById('music-artist').textContent=s.artist;
   document.getElementById('music-tip').textContent='';
   document.getElementById('now-playing').classList.add('active');
-
-  // 加载网易云播放器
+  // Show player wrap with overlay — don't set src yet, wait for user tap
   const wrap=document.getElementById('netease-wrap');
-  const frame=document.getElementById('netease-frame');
-  frame.src='';
+  const overlay=document.getElementById('music-overlay');
+  document.getElementById('netease-frame').src=''; // clear any old src
+  overlay.classList.remove('hidden');
   wrap.classList.add('show');
-  setTimeout(()=>{
-    frame.src=`https://music.163.com/outchain/player?type=2&id=${s.neteaseId}&auto=1&height=66`;
-  },50);
+}
+
+// Called directly from user click on overlay — counts as user gesture for autoplay
+function startPlay(){
+  if(currentSong<0) return;
+  const overlay=document.getElementById('music-overlay');
+  const frame=document.getElementById('netease-frame');
+  overlay.classList.add('hidden');
+  const id=PLAYLIST[currentSong].neteaseId;
+  frame.src=`https://music.163.com/outchain/player?type=2&id=${id}&auto=1&height=66`;
 }
 
 buildPlaylist();
@@ -1160,24 +1329,113 @@ buildPlaylist();
 const obs=new IntersectionObserver(es=>es.forEach(e=>{
   if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
 }),{threshold:.1});
-document.querySelectorAll('.feed-post').forEach(el=>obs.observe(el));
 
 // LIKE
 function toggleLike(btn){
   btn.classList.toggle('liked');
-  const icon=btn.querySelector('.icon');
-  const num=parseInt(btn.textContent)||0;
+  const num=parseInt(btn.querySelector('span.icon')?btn.textContent.replace(/[^\d]/g,''):btn.textContent)||0;
   if(btn.classList.contains('liked')){btn.innerHTML=`<span class="icon">♥</span>${num+1}`;}
   else{btn.innerHTML=`<span class="icon">♡</span>${Math.max(0,num-1)}`;}
 }
 
-// WRITE
+// ══════════════════════════════════════════════
+//  FEED POSTS — Firebase sync, admin can edit/delete
+// ══════════════════════════════════════════════
+const DEFAULT_POSTS=[
+  {who:'Aryn',avatar:'你',tag:'#第一次',content:'好久好久以前的事了，现在想起来还是会笑。',emoji:'✨',pc:'pc1'},
+  {who:'ndn',avatar:'我',tag:'#日常',content:'今天天气很好，我们出去走了走，什么都没说，但感觉很好。',emoji:'🌿',pc:'pc2'},
+];
+let postsData=[];
+
+function renderPosts(list){
+  const container=document.getElementById('dynamic-feed');
+  if(!list||list.length===0){
+    container.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted2)">还没有帖子，发第一条吧 ✦</div>';
+    return;
+  }
+  container.innerHTML=list.map((p,i)=>{
+    const isMe=p.avatar==='我';
+    const tsNum=p.ts?((p.ts.seconds?p.ts.seconds*1000:p.ts)):0;
+    const timeStr=tsNum?new Date(tsNum).toLocaleDateString('zh-CN',{month:'short',day:'numeric'}):'';
+    return `<div class="feed-post visible" style="position:relative">
+      ${adminUnlocked?`<button class="edit-btn" onclick="editPost('${p.id||i}',${i})">✏️</button>
+      <button class="del-btn" onclick="deletePost('${p.id||i}',event)">🗑️</button>`:''}
+      <div class="post-inner">
+        <div class="post-header">
+          <div class="post-avatar ${isMe?'b':''}">${p.avatar||'你'}</div>
+          <div class="post-meta"><div class="post-author">${p.who}</div><div class="post-time">${timeStr}</div></div>
+          <div class="post-more">···</div>
+        </div>
+        <div class="post-visual ${p.pc||'pc1'}"><div style="font-size:4.5rem">${p.emoji||'✨'}</div><div class="post-badge">${p.tag||'#日常'}</div></div>
+        <div class="post-actions">
+          <button class="action-btn" onclick="toggleLike(this)"><span class="icon">♡</span>${p.likes||0}</button>
+          <button class="action-btn"><span class="icon">💬</span>0</button>
+          <div class="post-spacer"></div>
+          <button class="post-share-btn">Share ↗</button>
+        </div>
+        <div class="post-caption"><strong>${p.who}</strong> ${p.content} <span class="tag">${p.tag||''}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadPosts(){
+  if(USE_FIREBASE){
+    db.collection('posts').orderBy('ts','desc').onSnapshot(snap=>{
+      postsData=snap.docs.map(d=>({id:d.id,...d.data()}));
+      if(postsData.length===0) seedPosts();
+      else renderPosts(postsData);
+    },()=>renderPosts(DEFAULT_POSTS));
+  } else {
+    postsData=DEFAULT_POSTS;
+    renderPosts(postsData);
+  }
+}
+
+async function seedPosts(){
+  const batch=db.batch();
+  DEFAULT_POSTS.forEach(p=>{
+    const ref=db.collection('posts').doc();
+    batch.set(ref,{...p,ts:firebase.firestore.FieldValue.serverTimestamp()});
+  });
+  await batch.commit();
+}
+
+function editPost(id,idx){
+  if(!adminUnlocked){showToast('请先输入管理员密码');return;}
+  ceditType='post';ceditTarget={id,idx};
+  const p=postsData[idx]||{};
+  document.getElementById('cedit-modal-title').textContent='编辑帖子';
+  document.getElementById('cedit-emoji').value=p.emoji||'✨';
+  document.getElementById('cedit-title-input').value=p.tag||'#日常';
+  document.getElementById('cedit-desc').value=p.content||'';
+  // update label to show "Tag" for post
+  document.querySelectorAll('#cedit-modal .cedit-label')[1].textContent='Tag（如 #日常）';
+  document.getElementById('cedit-modal').classList.add('open');
+}
+
+async function deletePost(id,e){
+  e.stopPropagation();
+  if(!adminUnlocked)return;
+  if(USE_FIREBASE) await db.collection('posts').doc(id).delete();
+  else{postsData=postsData.filter((_,i)=>String(i)!==String(id));renderPosts(postsData);}
+  showToast('已删除 ✦');
+}
+
+// WRITE — admin only
 function selectMood(btn){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
 function updateCharCount(el){const cc=document.getElementById('char-count'),n=el.value.length;cc.textContent=n+' / 280';cc.classList.toggle('warn',n>240);}
 function setTag(tag){document.getElementById('w-tag').value=tag;document.querySelectorAll('.write-tag').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
 
-let postNum=6;
 function submitPost(){
+  if(!adminUnlocked){
+    adminAction='post';
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-error').textContent='';
+    document.getElementById('admin-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
+    return;
+  }
   const who=document.getElementById('w-who').value;
   const avatar=document.getElementById('w-avatar').value;
   const tag=document.getElementById('w-tag').value.trim()||'#日常';
@@ -1187,24 +1445,17 @@ function submitPost(){
   const emoji=emojis[Math.floor(Math.random()*emojis.length)];
   const pcs=['pc1','pc2','pc3','pc4','pc5','pc6'];
   const pc=pcs[Math.floor(Math.random()*pcs.length)];
-  const isMe=avatar==='我';
-  const card=document.createElement('div');
-  card.className='new-post-card visible';
-  card.innerHTML=`<div class="post-inner"><div style="margin-bottom:12px"><span class="new-badge">new</span></div>
-    <div class="post-header"><div class="post-avatar ${isMe?'b':''}">${avatar}</div>
-    <div class="post-meta"><div class="post-author">${who}</div><div class="post-time">just now</div></div>
-    <div class="post-more">···</div></div>
-    <div class="post-visual ${pc}"><div style="font-size:4.5rem">${emoji}</div><div class="post-badge">${tag}</div></div>
-    <div class="post-actions"><button class="action-btn" onclick="toggleLike(this)"><span class="icon">♡</span>0</button>
-    <button class="action-btn"><span class="icon">💬</span>0</button><div class="post-spacer"></div>
-    <button class="post-share-btn">Share ↗</button></div>
-    <div class="post-caption"><strong>${who}</strong> ${content} <span class="tag">${tag}</span></div></div>`;
-  document.getElementById('dynamic-feed').prepend(card);
+  const post={who,avatar,tag,content,emoji,pc,likes:0};
+  if(USE_FIREBASE){
+    db.collection('posts').add({...post,ts:firebase.firestore.FieldValue.serverTimestamp()});
+  } else {
+    postsData.unshift(post);
+    renderPosts(postsData);
+  }
   document.getElementById('w-content').value='';
   document.getElementById('w-tag').value='';
   document.getElementById('char-count').textContent='0 / 280';
   document.querySelectorAll('.write-tag,.mood-btn').forEach(b=>b.classList.remove('active','selected'));
-  postNum++;
   showToast('Posted ✦');
   document.getElementById('feed').scrollIntoView({behavior:'smooth'});
 }
@@ -1313,10 +1564,75 @@ document.getElementById('msg-text').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
 });
 
+// ══════════════════════════════════════════════
+//  COMMENTS — public visitor guestbook
+// ══════════════════════════════════════════════
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function loadComments(){
+  if(USE_FIREBASE){
+    db.collection('comments').orderBy('ts','desc').onSnapshot(snap=>{
+      const list=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderComments(list);
+    },()=>{});
+  }
+}
+
+function renderComments(list){
+  const el=document.getElementById('comments-list');
+  if(!list||list.length===0){
+    el.innerHTML='<div class="comments-empty">还没有留言，成为第一个 ✦</div>';
+    return;
+  }
+  el.innerHTML=list.map(c=>{
+    const tsNum=c.ts?(c.ts.seconds?c.ts.seconds*1000:c.ts):0;
+    const timeStr=tsNum?new Date(tsNum).toLocaleDateString('zh-CN',{month:'short',day:'numeric'}):'';
+    return `<div class="comment-item">
+      <div class="comment-meta">
+        <span class="comment-name">${escHtml(c.name||'匿名')}</span>
+        <span class="comment-time">${timeStr}</span>
+      </div>
+      <div class="comment-text">${escHtml(c.text||'')}</div>
+    </div>`;
+  }).join('');
+}
+
+async function submitComment(){
+  const nameEl=document.getElementById('c-name');
+  const textEl=document.getElementById('c-text');
+  const name=(nameEl.value.trim()||'匿名').slice(0,20);
+  const text=textEl.value.trim();
+  if(!text){showToast('说点什么吧~ ✦');return;}
+  if(text.length>200){showToast('最多200字哦 ✦');return;}
+  const data={name,text};
+  if(USE_FIREBASE){
+    try{
+      await db.collection('comments').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
+    }catch(err){showToast('留言失败，请稍后再试');return;}
+  } else {
+    // local fallback — just show it temporarily
+    const fakeList=[{name,text,ts:Date.now()},...(window._localComments||[])];
+    window._localComments=fakeList;
+    renderComments(fakeList);
+  }
+  nameEl.value='';
+  textEl.value='';
+  showToast('留言成功 ✦ 谢谢来过~');
+}
+
 function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
+
+// ══════════════════════════════════════════════
+//  INIT — load all dynamic content
+// ══════════════════════════════════════════════
+loadStories();
+loadPosts();
+loadComments();
 </script>
 </body>
 </html>
