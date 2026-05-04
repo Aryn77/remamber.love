@@ -14,6 +14,8 @@
   4. 开启 Storage
   如果不配置，照片和留言只在当前设备可见
 ════════════════════════════════════════════════════════════ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
@@ -509,6 +511,39 @@ footer{border-top:1px solid var(--border);}
 @keyframes eq3{from{height:4px}to{height:14px}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 
+/* APLAYER DARK THEME */
+.aplayer{background:var(--surface)!important;border:1px solid var(--border2)!important;border-radius:16px!important;color:var(--text)!important;}
+.aplayer-body{background:transparent!important;}
+.aplayer-info{background:transparent!important;}
+.aplayer-name{color:var(--white)!important;font-family:'Plus Jakarta Sans',sans-serif!important;}
+.aplayer-author{color:var(--muted)!important;}
+.aplayer-time{background:transparent!important;}
+.aplayer-time-inner{color:var(--muted)!important;}
+.aplayer-bar-wrap .aplayer-bar .aplayer-loaded{background:var(--border2)!important;}
+.aplayer-bar-wrap .aplayer-bar .aplayer-played{background:var(--lime)!important;}
+.aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb{background:var(--lime)!important;border-color:var(--lime)!important;}
+.aplayer-volume-bar-wrap .aplayer-volume-bar .aplayer-volume{background:var(--lime)!important;}
+.aplayer-icon path,.aplayer-icon use{fill:var(--muted)!important;}
+.aplayer-icon:hover path,.aplayer-icon:hover use{fill:var(--white)!important;}
+.aplayer-icon-play path{fill:var(--lime)!important;}
+.aplayer-list{background:transparent!important;}
+.aplayer-list li{border-bottom:1px solid var(--border)!important;color:var(--muted)!important;}
+.aplayer-list li:hover{background:var(--bg3)!important;}
+.aplayer-list li.aplayer-list-light{background:var(--bg3)!important;color:var(--white)!important;}
+.aplayer-list-cur{color:var(--lime)!important;}
+.aplayer-lrc{background:transparent!important;}
+.aplayer-lrc p{color:var(--muted)!important;}
+.aplayer-lrc p.aplayer-lrc-current{color:var(--white)!important;}
+#music-load-msg{text-align:center;padding:20px;color:var(--muted);font-size:.88rem;letter-spacing:.05em;}
+/* FEED PHOTO */
+.feed-photo-wrap{margin-top:4px;}
+.feed-photo-preview{width:100%;min-height:100px;border:2px dashed var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;font-size:.85rem;color:var(--muted);background-size:cover;background-position:center;position:relative;overflow:hidden;}
+.feed-photo-preview:hover{border-color:var(--accent);}
+.feed-photo-preview.has-img{min-height:180px;}
+.feed-photo-remove{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;}
+/* EXIT ADMIN FAB */
+.admin-mode .admin-edit-fab{background:#555;}
+
 /* RESPONSIVE */
 @media(max-width:768px){
   nav{padding:16px 20px;}
@@ -630,14 +665,7 @@ footer{border-top:1px solid var(--border);}
     <div><div class="grid-eyebrow">Our Moments</div><h2 class="grid-title">gallery<span>.</span></h2></div>
     <div class="grid-right"><div class="grid-count">06</div><div class="grid-subtitle">moments captured</div></div>
   </div>
-  <div class="photo-grid">
-    <div class="photo-card pc1" onclick="openStory(0)"><div class="photo-card-inner">☕</div><span class="card-num">01</span><div class="photo-overlay"><div class="photo-overlay-arrow">↗</div><div class="photo-overlay-text">第一次见面</div><div class="photo-overlay-date">那个下午</div></div></div>
-    <div class="photo-card pc2" onclick="openStory(1)"><div class="photo-card-inner">🌿</div><span class="card-num">02</span><div class="photo-overlay"><div class="photo-overlay-arrow">↗</div><div class="photo-overlay-text">公园散步</div><div class="photo-overlay-date">春天</div></div></div>
-    <div class="photo-card pc3" onclick="openStory(2)"><div class="photo-card-inner">🌊</div><span class="card-num">03</span><div class="photo-overlay"><div class="photo-overlay-arrow">↗</div><div class="photo-overlay-text">我们的海</div><div class="photo-overlay-date">夏天</div></div></div>
-    <div class="photo-card pc4" onclick="openStory(3)"><div class="photo-card-inner">🎂</div><span class="card-num">04</span><div class="photo-overlay"><div class="photo-overlay-arrow">↗</div><div class="photo-overlay-text">生日惊喜</div><div class="photo-overlay-date">9月</div></div></div>
-    <div class="photo-card pc5" onclick="openStory(4)"><div class="photo-card-inner">🎵</div><span class="card-num">05</span><div class="photo-overlay"><div class="photo-overlay-arrow">↗</div><div class="photo-overlay-text">那首歌</div><div class="photo-overlay-date">随时</div></div></div>
-    <div class="photo-card pc6" onclick="openStory(5)"><div class="photo-card-inner">🌙</div><span class="card-num">06</span><div class="photo-overlay"><div class="photo-overlay-arrow">↗</div><div class="photo-overlay-text">深夜故事</div><div class="photo-overlay-date">每个夜晚</div></div></div>
-  </div>
+  <div class="photo-grid" id="gallery-grid"></div>
 </section>
 
 <!-- PHOTO WALL -->
@@ -705,14 +733,9 @@ footer{border-top:1px solid var(--border);}
       </div>
     </div>
 
-    <!-- 网易云 Player -->
-    <div class="netease-player-wrap" id="netease-wrap">
-      <div class="music-play-overlay" id="music-overlay" onclick="startPlay()">
-        <div class="music-play-icon">▶</div>
-        <span>点我开始播放</span>
-      </div>
-      <iframe id="netease-frame" src="" width="100%" height="86" scrolling="no" frameborder="no" allow="autoplay *; encrypted-media *"></iframe>
-    </div>
+    <!-- APlayer 播放器 -->
+    <div id="music-load-msg" style="display:none;">⏳ 加载音乐中，请稍候...</div>
+    <div id="aplayer-mount" style="margin-top:20px;border-radius:16px;overflow:hidden;display:none;"></div>
 
     <!-- Playlist -->
     <div class="playlist" id="playlist"></div>
@@ -749,6 +772,15 @@ footer{border-top:1px solid var(--border);}
         <div class="field"><label>头像</label><select id="w-avatar"><option value="你">你</option><option value="我">我</option></select></div>
         <div class="field field-full"><label>Tag</label><input type="text" id="w-tag" placeholder="#今天的心情"></div>
         <div class="field field-full"><label>正文</label><div class="textarea-wrap"><textarea id="w-content" placeholder="把今天的故事说出来..." maxlength="280" oninput="updateCharCount(this)"></textarea><span class="char-count" id="char-count">0 / 280</span></div></div>
+        <div class="field field-full">
+          <label>配图（可选）</label>
+          <div class="feed-photo-wrap">
+            <div class="feed-photo-preview" id="feed-photo-preview" onclick="document.getElementById('feed-photo-input').click()">
+              <span id="feed-photo-label">＋ 点击添加图片</span>
+            </div>
+            <input type="file" id="feed-photo-input" accept="image/*" style="display:none" onchange="previewFeedPhoto(this)">
+          </div>
+        </div>
       </div>
       <div class="write-tags">
         <button class="write-tag" onclick="setTag('#日常')">日常</button>
@@ -1045,7 +1077,10 @@ function confirmAdmin(){
     document.getElementById('admin-fab').classList.add('visible');
     document.body.classList.add('admin-mode');
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
-    renderPosts(postsData); // re-render feed to show edit/del buttons
+    renderPosts(postsData);
+    renderGallery(storiesData);
+    document.getElementById('admin-fab').textContent='✕';
+    document.getElementById('admin-fab').title='点击退出管理员模式';
     if(adminAction==='upload') document.getElementById('photo-upload-input').click();
     else if(adminAction==='post'){ adminAction='upload'; submitPost(); }
   } else {
@@ -1062,7 +1097,25 @@ function requestAdminUpload(){
   document.getElementById('admin-modal').classList.add('open');
   setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
 }
-function toggleAdminPanel(){showToast(adminUnlocked?'管理员模式已开启 ✏️':'请先登录');}
+function toggleAdminPanel(){
+  if(adminUnlocked){
+    adminUnlocked=false;
+    document.getElementById('admin-fab').classList.remove('visible');
+    document.getElementById('admin-fab').textContent='✏️';
+    document.getElementById('admin-fab').title='管理员登录';
+    document.body.classList.remove('admin-mode');
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+    renderPosts(postsData);
+    renderGallery(storiesData);
+    showToast('已退出管理员模式');
+  } else {
+    adminAction='login';
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-error').textContent='';
+    document.getElementById('admin-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
+  }
+}
 
 // ══════════════════════════════════════════════
 //  STORIES — Firebase 同步，admin 可编辑
@@ -1090,6 +1143,25 @@ function renderStories(list){
       </div>
       <div class="story-label">${d.title}</div>
       <button class="edit-btn" onclick="editStory('${d.id||i}',${i})">✏️</button>
+    </div>`).join('');
+  renderGallery(list);
+}
+
+const GALLERY_BG=['pc1','pc2','pc3','pc4','pc5','pc6'];
+const GALLERY_DATES=['那个下午','春天','夏天','9月','随时','每个夜晚'];
+function renderGallery(list){
+  const el=document.getElementById('gallery-grid');
+  if(!el)return;
+  el.innerHTML=list.slice(0,6).map((d,i)=>`
+    <div class="photo-card ${GALLERY_BG[i]}" onclick="openStory(${i})" style="position:relative${i===0?';grid-column:span 2':''}">
+      <div class="photo-card-inner">${d.emoji}</div>
+      <span class="card-num">${String(i+1).padStart(2,'0')}</span>
+      <div class="photo-overlay">
+        <div class="photo-overlay-arrow">↗</div>
+        <div class="photo-overlay-text">${d.title}</div>
+        <div class="photo-overlay-date">${d.date||GALLERY_DATES[i]||''}</div>
+      </div>
+      ${adminUnlocked?`<button class="edit-btn" onclick="event.stopPropagation();editStory('${d.id||i}',${i})">✏️</button>`:''}
     </div>`).join('');
 }
 
@@ -1293,6 +1365,8 @@ function buildPlaylist(){
     </div>`).join('');
 }
 
+let apPlayer=null,apReady=false,apSongMap=[];
+
 function playSong(i){
   currentSong=i;
   const s=PLAYLIST[i];
@@ -1301,24 +1375,52 @@ function playSong(i){
   document.getElementById('music-art').textContent=s.emoji;
   document.getElementById('music-title').textContent=s.title;
   document.getElementById('music-artist').textContent=s.artist;
-  document.getElementById('music-tip').textContent='';
   document.getElementById('now-playing').classList.add('active');
-  // Show player wrap with overlay — don't set src yet, wait for user tap
-  const wrap=document.getElementById('netease-wrap');
-  const overlay=document.getElementById('music-overlay');
-  document.getElementById('netease-frame').src=''; // clear any old src
-  overlay.classList.remove('hidden');
-  wrap.classList.add('show');
+  if(apReady&&apPlayer){
+    const apIdx=apSongMap.indexOf(i);
+    if(apIdx>=0){apPlayer.list.switch(apIdx);apPlayer.play();}
+    else showToast('此歌曲暂不可播放 😔');
+  } else {
+    showToast('音乐加载中，请稍候...');
+  }
 }
 
-// Called directly from user click on overlay — counts as user gesture for autoplay
-function startPlay(){
-  if(currentSong<0) return;
-  const overlay=document.getElementById('music-overlay');
-  const frame=document.getElementById('netease-frame');
-  overlay.classList.add('hidden');
-  const id=PLAYLIST[currentSong].neteaseId;
-  frame.src=`https://music.163.com/outchain/player?type=2&id=${id}&auto=1&height=66`;
+async function initAPlayer(){
+  const mount=document.getElementById('aplayer-mount');
+  const loadMsg=document.getElementById('music-load-msg');
+  loadMsg.style.display='block';
+  const songs=[];
+  const map=[];
+  for(let i=0;i<PLAYLIST.length;i++){
+    const s=PLAYLIST[i];
+    try{
+      const r=await fetch(`https://api.injahow.cn/meting/?server=netease&type=song&id=${s.neteaseId}&r=${Math.random()}`);
+      const d=await r.json();
+      if(d[0]&&d[0].url){
+        songs.push({name:s.title,artist:s.artist,url:d[0].url,cover:d[0].pic||''});
+        map.push(i);
+      }
+    }catch(e){}
+  }
+  loadMsg.style.display='none';
+  if(!songs.length){
+    mount.style.display='block';
+    mount.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:.85rem">😔 暂时无法加载音乐<br><span style="font-size:.78rem;color:var(--muted2)">可直接在网易云搜索「阿克江Akin」</span></div>';
+    return;
+  }
+  apSongMap=map;
+  mount.style.display='block';
+  apPlayer=new APlayer({container:mount,theme:'#d4ff00',audio:songs,autoplay:false,preload:'none',listFolded:true});
+  apReady=true;
+  apPlayer.on('play',()=>{
+    const idx=apSongMap[apPlayer.list.index];
+    if(idx===undefined)return;
+    document.querySelectorAll('.playlist-item').forEach(el=>el.classList.remove('active'));
+    const pl=document.getElementById('pl-'+idx);
+    if(pl)pl.classList.add('active');
+    const s=PLAYLIST[idx];
+    if(s){document.getElementById('music-art').textContent=s.emoji;document.getElementById('music-title').textContent=s.title;document.getElementById('music-artist').textContent=s.artist;document.getElementById('now-playing').classList.add('active');}
+  });
 }
 
 buildPlaylist();
@@ -1366,7 +1468,7 @@ function renderPosts(list){
           <div class="post-meta"><div class="post-author">${p.who}</div><div class="post-time">${timeStr}</div></div>
           <div class="post-more">···</div>
         </div>
-        <div class="post-visual ${p.pc||'pc1'}"><div style="font-size:4.5rem">${p.emoji||'✨'}</div><div class="post-badge">${p.tag||'#日常'}</div></div>
+        ${p.photo?`<div class="post-visual" style="background:#111;padding:0"><img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;display:block"><div class="post-badge">${p.tag||'#日常'}</div></div>`:`<div class="post-visual ${p.pc||'pc1'}"><div style="font-size:4.5rem">${p.emoji||'✨'}</div><div class="post-badge">${p.tag||'#日常'}</div></div>`}
         <div class="post-actions">
           <button class="action-btn" onclick="toggleLike(this)"><span class="icon">♡</span>${p.likes||0}</button>
           <button class="action-btn"><span class="icon">💬</span>0</button>
@@ -1422,6 +1524,28 @@ async function deletePost(id,e){
   showToast('已删除 ✦');
 }
 
+// ── Feed photo preview ──
+let feedPhotoData=null;
+function previewFeedPhoto(input){
+  if(!input.files[0])return;
+  compressImage(input.files[0],1200,0.78).then(dataUrl=>{
+    feedPhotoData=dataUrl;
+    const preview=document.getElementById('feed-photo-preview');
+    preview.style.backgroundImage=`url(${dataUrl})`;
+    preview.style.backgroundSize='cover';
+    preview.style.backgroundPosition='center';
+    preview.classList.add('has-img');
+    document.getElementById('feed-photo-label').style.display='none';
+    // Add remove button if not already there
+    if(!preview.querySelector('.feed-photo-remove')){
+      const btn=document.createElement('button');
+      btn.className='feed-photo-remove';btn.textContent='✕';
+      btn.onclick=e=>{e.stopPropagation();feedPhotoData=null;preview.style.backgroundImage='';preview.classList.remove('has-img');document.getElementById('feed-photo-label').style.display='';preview.querySelector('.feed-photo-remove').remove();document.getElementById('feed-photo-input').value='';};
+      preview.appendChild(btn);
+    }
+  });
+}
+
 // WRITE — admin only
 function selectMood(btn){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
 function updateCharCount(el){const cc=document.getElementById('char-count'),n=el.value.length;cc.textContent=n+' / 280';cc.classList.toggle('warn',n>240);}
@@ -1446,6 +1570,7 @@ function submitPost(){
   const pcs=['pc1','pc2','pc3','pc4','pc5','pc6'];
   const pc=pcs[Math.floor(Math.random()*pcs.length)];
   const post={who,avatar,tag,content,emoji,pc,likes:0};
+  if(feedPhotoData) post.photo=feedPhotoData;
   if(USE_FIREBASE){
     db.collection('posts').add({...post,ts:firebase.firestore.FieldValue.serverTimestamp()});
   } else {
@@ -1456,6 +1581,13 @@ function submitPost(){
   document.getElementById('w-tag').value='';
   document.getElementById('char-count').textContent='0 / 280';
   document.querySelectorAll('.write-tag,.mood-btn').forEach(b=>b.classList.remove('active','selected'));
+  // clear photo
+  feedPhotoData=null;
+  const pv=document.getElementById('feed-photo-preview');
+  pv.style.backgroundImage='';pv.classList.remove('has-img');
+  document.getElementById('feed-photo-label').style.display='';
+  const rmBtn=pv.querySelector('.feed-photo-remove');if(rmBtn)rmBtn.remove();
+  document.getElementById('feed-photo-input').value='';
   showToast('Posted ✦');
   document.getElementById('feed').scrollIntoView({behavior:'smooth'});
 }
@@ -1633,6 +1765,7 @@ function showToast(msg){
 loadStories();
 loadPosts();
 loadComments();
+initAPlayer();
 </script>
 </body>
 </html>
