@@ -593,6 +593,18 @@ footer{border-top:1px solid var(--border);}
 .vadd-modal.open{opacity:1;pointer-events:all;}
 .vadd-box{width:min(480px,92vw);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:16px;}
 .vadd-platform-hint{font-size:.72rem;color:var(--lime);margin-top:4px;min-height:18px;}
+/* Add-video tabs */
+.vadd-tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);padding-bottom:14px;}
+.vadd-tab{flex:1;padding:9px 0;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.73rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.vadd-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(255,77,109,.08);}
+/* Local upload drop zone */
+.vadd-drop-zone{border:2px dashed var(--border2);border-radius:14px;padding:30px 20px;text-align:center;cursor:pointer;transition:all .25s;user-select:none;}
+.vadd-drop-zone:hover,.vadd-drop-zone.dragover{border-color:var(--accent);background:rgba(255,77,109,.05);}
+.vadd-drop-icon{font-size:2.2rem;margin-bottom:8px;}
+.vadd-drop-text{color:var(--text);font-weight:500;font-size:.88rem;margin-bottom:3px;}
+.vadd-drop-sub{color:var(--muted);font-size:.7rem;}
+.vadd-drop-selected{border-color:var(--lime)!important;background:rgba(212,255,0,.04)!important;}
+.vadd-file-hint{font-size:.72rem;margin-top:6px;min-height:18px;}
 @media(max-width:768px){#videos{padding-left:20px;padding-right:20px;}.video-card{width:140px;}}
 
 /* APLAYER DARK THEME */
@@ -888,17 +900,34 @@ footer{border-top:1px solid var(--border);}
 <div class="vadd-modal" id="vadd-modal">
   <div class="vadd-box">
     <div class="cedit-title">添加视频</div>
+    <!-- Tabs -->
+    <div class="vadd-tabs">
+      <button class="vadd-tab active" id="vadd-tab-url" onclick="setVaddMode('url')">🔗 链接</button>
+      <button class="vadd-tab" id="vadd-tab-local" onclick="setVaddMode('local')">📁 本地上传</button>
+    </div>
+    <!-- URL section -->
+    <div id="vadd-url-section">
+      <div class="cedit-label">视频链接</div>
+      <input class="cedit-input" type="url" id="vadd-url" placeholder="B站：https://www.bilibili.com/video/BV..." oninput="previewVideoUrl()">
+      <div class="vadd-platform-hint" id="vadd-platform"></div>
+    </div>
+    <!-- Local upload section -->
+    <div id="vadd-local-section" style="display:none">
+      <div class="vadd-drop-zone" id="vadd-drop-zone" onclick="document.getElementById('vadd-file-input').click()">
+        <div class="vadd-drop-icon">📁</div>
+        <div class="vadd-drop-text">点击选择 或 拖放视频</div>
+        <div class="vadd-drop-sub">支持 mp4 · mov · webm，建议 200MB 以内</div>
+      </div>
+      <input type="file" id="vadd-file-input" accept="video/mp4,video/quicktime,video/webm,video/*" style="display:none" onchange="handleVaddFile(this.files[0])">
+      <div class="vadd-file-hint" id="vadd-file-hint"></div>
+    </div>
+    <!-- Common fields -->
     <div>
       <div class="cedit-label">视频标题</div>
       <input class="cedit-input" type="text" id="vadd-title" placeholder="比如：我们的第一次旅行">
     </div>
     <div>
-      <div class="cedit-label">视频链接</div>
-      <input class="cedit-input" type="url" id="vadd-url" placeholder="B站：https://www.bilibili.com/video/BV..." oninput="previewVideoUrl()">
-      <div class="vadd-platform-hint" id="vadd-platform"></div>
-    </div>
-    <div>
-      <div class="cedit-label">Emoji 封面（可选，没图用这个）</div>
+      <div class="cedit-label">Emoji 封面（可选）</div>
       <input class="cedit-input" type="text" id="vadd-emoji" placeholder="🎬 🌊 🌙 ✨ 等">
     </div>
     <div>
@@ -1773,7 +1802,55 @@ async function deletePost(id,e){
 // ══════════════════════════════════════════════
 //  VIDEOS — short video gallery
 // ══════════════════════════════════════════════
+//  VIDEO SECTION
+// ══════════════════════════════════════════════
 let videosData=[];
+let vaddMode='url';
+let vaddLocalFile=null;
+
+// ── IndexedDB wrapper for local video blobs ──
+const VideoDB={
+  _db:null,
+  open(){
+    return new Promise((res,rej)=>{
+      if(this._db)return res(this._db);
+      const req=indexedDB.open('couples-videos',1);
+      req.onupgradeneeded=e=>e.target.result.createObjectStore('blobs');
+      req.onsuccess=e=>{this._db=e.target.result;res(this._db);};
+      req.onerror=rej;
+    });
+  },
+  async save(id,blob){const db=await this.open();return new Promise((r,j)=>{const tx=db.transaction('blobs','readwrite');tx.objectStore('blobs').put(blob,id);tx.oncomplete=r;tx.onerror=j;});},
+  async load(id){const db=await this.open();return new Promise((r,j)=>{const tx=db.transaction('blobs','readonly');const req=tx.objectStore('blobs').get(id);req.onsuccess=e=>r(e.target.result);req.onerror=j;});},
+  async del(id){const db=await this.open();return new Promise((r,j)=>{const tx=db.transaction('blobs','readwrite');tx.objectStore('blobs').delete(id);tx.oncomplete=r;tx.onerror=j;});}
+};
+
+function setVaddMode(mode){
+  vaddMode=mode;
+  document.getElementById('vadd-url-section').style.display=mode==='url'?'':'none';
+  document.getElementById('vadd-local-section').style.display=mode==='local'?'':'none';
+  document.getElementById('vadd-tab-url').classList.toggle('active',mode==='url');
+  document.getElementById('vadd-tab-local').classList.toggle('active',mode==='local');
+}
+
+function handleVaddFile(file){
+  if(!file)return;
+  const hint=document.getElementById('vadd-file-hint');
+  const zone=document.getElementById('vadd-drop-zone');
+  const sizeMB=(file.size/1024/1024).toFixed(1);
+  if(file.size>500*1024*1024){hint.textContent='文件超过500MB，请压缩后再试';hint.style.color='var(--accent)';return;}
+  vaddLocalFile=file;
+  zone.classList.add('vadd-drop-selected');
+  zone.querySelector('.vadd-drop-icon').textContent='✅';
+  zone.querySelector('.vadd-drop-text').textContent=file.name.length>28?file.name.slice(0,26)+'…':file.name;
+  zone.querySelector('.vadd-drop-sub').textContent=`${sizeMB} MB`;
+  hint.textContent='视频保存在本设备，其他设备打开时将无法播放';
+  hint.style.color='var(--muted)';
+  // Auto-fill title if empty
+  if(!document.getElementById('vadd-title').value){
+    document.getElementById('vadd-title').value=file.name.replace(/\.[^.]+$/,'').replace(/[_\-]/g,' ');
+  }
+}
 
 function parseVideoUrl(url){
   if(!url)return null;
@@ -1801,7 +1878,7 @@ function getEmbedUrl(p){
   return'';
 }
 
-const PLATFORM_LABELS={bilibili:'B站',youtube:'YouTube',direct:'直链视频'};
+const PLATFORM_LABELS={bilibili:'B站',youtube:'YouTube',direct:'直链视频',local:'本地'};
 
 function previewVideoUrl(){
   const url=document.getElementById('vadd-url').value;
@@ -1828,7 +1905,7 @@ function renderVideos(list){
   }
   empty.style.display='none';
   row.innerHTML=list.map((v,i)=>{
-    const p=parseVideoUrl(v.url)||{};
+    const p=v.localId?{platform:'local'}:(parseVideoUrl(v.url)||{});
     const badge=PLATFORM_LABELS[p.platform]||'';
     return`<div class="video-card">
       <div class="video-thumb" onclick="openVideoModal(${i})">
@@ -1845,12 +1922,27 @@ function renderVideos(list){
   }).join('');
 }
 
-function openVideoModal(i){
+async function openVideoModal(i){
   const v=videosData[i];if(!v)return;
-  const p=parseVideoUrl(v.url);
   const wrap=document.getElementById('video-player-wrap');
   document.getElementById('vm-title').textContent=v.title||'';
   document.getElementById('vm-desc').textContent=v.desc||'';
+  document.getElementById('video-modal').classList.add('open');
+  // Local video stored in IndexedDB
+  if(v.localId){
+    wrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:.85rem">⏳ 加载中...</div>`;
+    const blob=await VideoDB.load(v.localId);
+    if(blob){
+      const blobUrl=URL.createObjectURL(blob);
+      wrap.innerHTML=`<video controls autoplay playsinline src="${blobUrl}"></video>`;
+      wrap.dataset.blobUrl=blobUrl;
+    } else {
+      wrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;text-align:center;padding:24px;color:var(--muted)"><div style="font-size:2.5rem">💕</div><div style="font-size:.82rem;line-height:1.6">本地视频只存在上传的设备上<br>换设备打开时无法播放</div></div>`;
+    }
+    return;
+  }
+  // Online link
+  const p=parseVideoUrl(v.url);
   if(p&&p.platform==='direct'){
     wrap.innerHTML=`<video controls autoplay playsinline src="${p.id}"></video>`;
   } else if(p){
@@ -1858,11 +1950,12 @@ function openVideoModal(i){
   } else {
     wrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)">无法播放此链接</div>`;
   }
-  document.getElementById('video-modal').classList.add('open');
 }
 function closeVideoModal(){
+  const wrap=document.getElementById('video-player-wrap');
+  if(wrap.dataset.blobUrl){URL.revokeObjectURL(wrap.dataset.blobUrl);delete wrap.dataset.blobUrl;}
+  wrap.innerHTML='';
   document.getElementById('video-modal').classList.remove('open');
-  document.getElementById('video-player-wrap').innerHTML=''; // stop playback
 }
 function handleVideoModalClick(e){if(e.target===document.getElementById('video-modal'))closeVideoModal();}
 
@@ -1870,31 +1963,63 @@ function openAddVideo(){
   if(!adminUnlocked){adminAction='addvideo';document.getElementById('admin-pw-input').value='';document.getElementById('admin-error').textContent='';document.getElementById('admin-modal').classList.add('open');setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);return;}
   ['vadd-title','vadd-url','vadd-emoji','vadd-desc'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('vadd-platform').textContent='';
+  document.getElementById('vadd-file-hint').textContent='';
+  document.getElementById('vadd-file-input').value='';
+  vaddLocalFile=null;
+  // Reset drop zone
+  const zone=document.getElementById('vadd-drop-zone');
+  zone.classList.remove('vadd-drop-selected');
+  zone.querySelector('.vadd-drop-icon').textContent='📁';
+  zone.querySelector('.vadd-drop-text').textContent='点击选择 或 拖放视频';
+  zone.querySelector('.vadd-drop-sub').textContent='支持 mp4 · mov · webm，建议 200MB 以内';
+  setVaddMode('url');
+  // Wire drag-and-drop
+  zone.ondragover=e=>{e.preventDefault();zone.classList.add('dragover');};
+  zone.ondragleave=()=>zone.classList.remove('dragover');
+  zone.ondrop=e=>{e.preventDefault();zone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('video/'))handleVaddFile(f);else showToast('请拖入视频文件');};
   document.getElementById('vadd-modal').classList.add('open');
 }
 function closeAddVideo(){document.getElementById('vadd-modal').classList.remove('open');}
 
 async function saveAddVideo(){
   const title=document.getElementById('vadd-title').value.trim();
-  const url=document.getElementById('vadd-url').value.trim();
   const emoji=document.getElementById('vadd-emoji').value.trim()||'🎬';
   const desc=document.getElementById('vadd-desc').value.trim();
   if(!title){showToast('请填写标题');return;}
-  if(!url||!parseVideoUrl(url)){showToast('请输入有效的视频链接（B站或YouTube）');return;}
-  const data={title,url,emoji,desc,order:videosData.length};
-  if(USE_FIREBASE){
-    await db.collection('videos').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
+
+  if(vaddMode==='local'){
+    if(!vaddLocalFile){showToast('请先选择视频文件');return;}
+    showToast('上传中，请稍候…');
+    const localId='v_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    await VideoDB.save(localId,vaddLocalFile);
+    const data={title,emoji,desc,localId,order:videosData.length};
+    if(USE_FIREBASE){
+      await db.collection('videos').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
+    } else {
+      videosData.push({...data,id:Date.now()+''});
+      renderVideos(videosData);
+    }
+    closeAddVideo();showToast('本地视频已添加 ✦（仅此设备可播放）');
   } else {
-    videosData.push({...data,id:Date.now()+''});
-    renderVideos(videosData);
+    const url=document.getElementById('vadd-url').value.trim();
+    if(!url||!parseVideoUrl(url)){showToast('请输入有效的视频链接（B站或YouTube）');return;}
+    const data={title,url,emoji,desc,order:videosData.length};
+    if(USE_FIREBASE){
+      await db.collection('videos').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
+    } else {
+      videosData.push({...data,id:Date.now()+''});
+      renderVideos(videosData);
+    }
+    closeAddVideo();showToast('视频已添加 ✦');
   }
-  closeAddVideo();showToast('视频已添加 ✦');
 }
 
 async function deleteVideo(id,e){
   e.stopPropagation();if(!adminUnlocked)return;
+  const v=videosData.find(x=>x.id===id);
+  if(v&&v.localId) await VideoDB.del(v.localId).catch(()=>{});
   if(USE_FIREBASE)await db.collection('videos').doc(id).delete();
-  else{videosData=videosData.filter(v=>v.id!==id);renderVideos(videosData);}
+  else{videosData=videosData.filter(x=>x.id!==id);renderVideos(videosData);}
   showToast('已删除 ✦');
 }
 
