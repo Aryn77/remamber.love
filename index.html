@@ -472,12 +472,15 @@ footer{border-top:1px solid var(--border);}
 .comment-submit{align-self:flex-end;background:var(--accent);color:white;border:none;border-radius:100px;padding:10px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
 .comment-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,77,109,.3);}
 .comments-list{display:flex;flex-direction:column;gap:16px;}
-.comment-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;}
+.comment-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;position:relative;}
 .comment-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .comment-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:var(--white);}
 .comment-time{font-size:.7rem;color:var(--muted);letter-spacing:.05em;}
 .comment-text{font-size:.9rem;color:var(--muted);line-height:1.7;}
 .comments-empty{text-align:center;color:var(--muted);font-size:.88rem;padding:40px 0;}
+.comment-del-btn{position:absolute;top:12px;right:14px;background:none;border:1px solid rgba(255,77,109,.2);color:var(--muted);border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.7rem;display:none;align-items:center;justify-content:center;transition:all .2s;}
+.comment-del-btn:hover{background:rgba(255,77,109,.15);color:var(--accent);border-color:var(--accent);}
+.admin-mode .comment-del-btn{display:flex;}
 
 /* MUSIC play overlay */
 .netease-player-wrap{position:relative;}
@@ -731,7 +734,7 @@ footer{border-top:1px solid var(--border);}
           <p style="font-size:.82rem">还没有在这里的照片<br>成为第一个打卡的人吧</p>
         </div>
         <input type="file" id="city-upload-input" accept="image/*" multiple style="display:none" onchange="uploadCityPhoto(this)">
-        <button class="cp-upload-btn admin-only" id="city-upload-btn" style="display:none" onclick="handleCityUpload()">＋ 添加在这里的照片</button>
+        <button class="cp-upload-btn" id="city-upload-btn" onclick="handleCityUpload()">＋ 添加在这里的照片</button>
       </div>
     </div>
     <!-- Zoom controls -->
@@ -1141,6 +1144,7 @@ function confirmAdmin(){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
     renderPosts(postsData);
     renderGallery(storiesData);
+    renderComments(commentsData);
     document.getElementById('admin-fab').textContent='✕';
     document.getElementById('admin-fab').title='点击退出管理员模式';
     if(adminAction==='upload') document.getElementById('photo-upload-input').click();
@@ -1170,6 +1174,7 @@ function toggleAdminPanel(){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
     renderPosts(postsData);
     renderGallery(storiesData);
+    renderComments(commentsData);
     if(currentMapCity)renderCityPhotos(currentMapCity);
     updateMapSeries();
     showToast('已退出管理员模式');
@@ -1836,11 +1841,13 @@ function escHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+let commentsData=[];
+
 function loadComments(){
   if(USE_FIREBASE){
     db.collection('comments').orderBy('ts','desc').onSnapshot(snap=>{
-      const list=snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderComments(list);
+      commentsData=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderComments(commentsData);
     },()=>{});
   }
 }
@@ -1860,8 +1867,16 @@ function renderComments(list){
         <span class="comment-time">${timeStr}</span>
       </div>
       <div class="comment-text">${escHtml(c.text||'')}</div>
+      <button class="comment-del-btn" onclick="deleteComment('${c.id}',event)" title="删除留言">✕</button>
     </div>`;
   }).join('');
+}
+
+async function deleteComment(id,e){
+  e.stopPropagation();
+  if(!adminUnlocked)return;
+  if(USE_FIREBASE) await db.collection('comments').doc(id).delete();
+  else{commentsData=commentsData.filter(c=>c.id!==id);renderComments(commentsData);}
 }
 
 async function submitComment(){
