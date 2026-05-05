@@ -16,7 +16,8 @@
 ════════════════════════════════════════════════════════════ -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
 <script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
@@ -1383,19 +1384,10 @@ function updateMapSeries(){
   ]});
 }
 
-async function initMap(){
-  if(typeof echarts==='undefined')return;
-  let geo;
-  const urls=['https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json',
-               'https://geo.datav.aliyun.com/areas_v3/bound/100000.json'];
-  for(const url of urls){
-    try{const r=await fetch(url);if(r.ok){geo=await r.json();break;}}catch{}
+function initMap(){
+  if(typeof echarts==='undefined'){
+    setTimeout(initMap,600);return; // wait for CDN script
   }
-  if(!geo){
-    document.getElementById('map-container').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:.88rem">🗺️ 地图加载失败，请刷新重试</div>';
-    return;
-  }
-  echarts.registerMap('china',geo);
   mapChart=echarts.init(document.getElementById('map-container'),null,{renderer:'canvas'});
   mapChart.setOption({
     backgroundColor:'transparent',
@@ -2011,7 +2003,7 @@ loadStories();
 loadPosts();
 loadComments();
 initAPlayer();
-initMap();
+setTimeout(initMap, 200); // give china.js time to register map
 </script>
 </body>
 </html>
