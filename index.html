@@ -20,6 +20,7 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script>
 // ↓ 把这里换成你的 Firebase 配置 ↓
 const FIREBASE_CONFIG = {
@@ -32,9 +33,11 @@ const FIREBASE_CONFIG = {
 };
 const USE_FIREBASE = FIREBASE_CONFIG.apiKey !== "";
 let db = null;
+let storage = null;
 if (USE_FIREBASE) {
   firebase.initializeApp(FIREBASE_CONFIG);
   db = firebase.firestore();
+  storage = firebase.storage();
 }
 </script>
 
@@ -605,6 +608,12 @@ footer{border-top:1px solid var(--border);}
 .vadd-drop-sub{color:var(--muted);font-size:.7rem;}
 .vadd-drop-selected{border-color:var(--lime)!important;background:rgba(212,255,0,.04)!important;}
 .vadd-file-hint{font-size:.72rem;margin-top:6px;min-height:18px;}
+/* Upload progress */
+.vadd-progress{display:none;flex-direction:column;gap:8px;}
+.vadd-progress.show{display:flex;}
+.vadd-progress-label{font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;}
+.vadd-progress-track{height:3px;background:var(--bg2);border-radius:100px;overflow:hidden;}
+.vadd-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--lime));border-radius:100px;width:0%;transition:width .3s ease;}
 @media(max-width:768px){#videos{padding-left:20px;padding-right:20px;}.video-card{width:140px;}}
 
 /* APLAYER DARK THEME */
@@ -920,6 +929,11 @@ footer{border-top:1px solid var(--border);}
       </div>
       <input type="file" id="vadd-file-input" accept="video/mp4,video/quicktime,video/webm,video/*" style="display:none" onchange="handleVaddFile(this.files[0])">
       <div class="vadd-file-hint" id="vadd-file-hint"></div>
+    </div>
+    <!-- Upload progress -->
+    <div class="vadd-progress" id="vadd-progress">
+      <div class="vadd-progress-label"><span id="vadd-progress-text">上传中...</span><span id="vadd-progress-pct">0%</span></div>
+      <div class="vadd-progress-track"><div class="vadd-progress-fill" id="vadd-progress-fill"></div></div>
     </div>
     <!-- Common fields -->
     <div>
@@ -1825,6 +1839,21 @@ const VideoDB={
   async del(id){const db=await this.open();return new Promise((r,j)=>{const tx=db.transaction('blobs','readwrite');tx.objectStore('blobs').delete(id);tx.oncomplete=r;tx.onerror=j;});}
 };
 
+// Upload video file to Firebase Storage, returns download URL
+function uploadVideoToStorage(file, onProgress){
+  return new Promise((resolve, reject)=>{
+    const ext=file.name.split('.').pop().toLowerCase()||'mp4';
+    const path=`videos/${Date.now()}_${Math.random().toString(36).slice(2,7)}.${ext}`;
+    const ref=storage.ref(path);
+    const task=ref.put(file,{contentType:file.type||'video/mp4'});
+    task.on('state_changed',
+      snap=>onProgress&&onProgress(snap.bytesTransferred/snap.totalBytes,snap.bytesTransferred,snap.totalBytes),
+      reject,
+      ()=>task.snapshot.ref.getDownloadURL().then(resolve).catch(reject)
+    );
+  });
+}
+
 function setVaddMode(mode){
   vaddMode=mode;
   document.getElementById('vadd-url-section').style.display=mode==='url'?'':'none';
@@ -1979,7 +2008,18 @@ function openAddVideo(){
   zone.ondrop=e=>{e.preventDefault();zone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('video/'))handleVaddFile(f);else showToast('请拖入视频文件');};
   document.getElementById('vadd-modal').classList.add('open');
 }
-function closeAddVideo(){document.getElementById('vadd-modal').classList.remove('open');}
+function closeAddVideo(){
+  document.getElementById('vadd-modal').classList.remove('open');
+  // Reset upload UI
+  const saveBtn=document.querySelector('#vadd-modal .cedit-btn.primary');
+  const cancelBtn=document.querySelector('#vadd-modal .cedit-btn.secondary');
+  if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='添加 ✓';}
+  if(cancelBtn)cancelBtn.disabled=false;
+  const prog=document.getElementById('vadd-progress');
+  const fill=document.getElementById('vadd-progress-fill');
+  if(prog)prog.classList.remove('show');
+  if(fill)fill.style.width='0%';
+}
 
 async function saveAddVideo(){
   const title=document.getElementById('vadd-title').value.trim();
@@ -1989,17 +2029,43 @@ async function saveAddVideo(){
 
   if(vaddMode==='local'){
     if(!vaddLocalFile){showToast('请先选择视频文件');return;}
-    showToast('上传中，请稍候…');
-    const localId='v_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
-    await VideoDB.save(localId,vaddLocalFile);
-    const data={title,emoji,desc,localId,order:videosData.length};
-    if(USE_FIREBASE){
-      await db.collection('videos').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
-    } else {
-      videosData.push({...data,id:Date.now()+''});
-      renderVideos(videosData);
+    // Disable buttons during upload
+    const saveBtn=document.querySelector('#vadd-modal .cedit-btn.primary');
+    const cancelBtn=document.querySelector('#vadd-modal .cedit-btn.secondary');
+    saveBtn.disabled=true;saveBtn.textContent='上传中…';
+    cancelBtn.disabled=true;
+    const prog=document.getElementById('vadd-progress');
+    const fill=document.getElementById('vadd-progress-fill');
+    const pctEl=document.getElementById('vadd-progress-pct');
+    const txtEl=document.getElementById('vadd-progress-text');
+    prog.classList.add('show');
+    try{
+      if(USE_FIREBASE&&storage){
+        // Upload to Firebase Storage — everyone can watch
+        const url=await uploadVideoToStorage(vaddLocalFile,(pct,done,total)=>{
+          const p=Math.round(pct*100);
+          fill.style.width=p+'%';
+          pctEl.textContent=p+'%';
+          txtEl.textContent=`上传中 ${(done/1024/1024).toFixed(1)}/${(total/1024/1024).toFixed(1)} MB`;
+        });
+        const data={title,url,emoji,desc,order:videosData.length};
+        await db.collection('videos').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
+        closeAddVideo();showToast('视频已上传，所有人都能看 ✦');
+      } else {
+        // No Firebase — fallback to IndexedDB (local only)
+        const localId='v_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+        await VideoDB.save(localId,vaddLocalFile);
+        videosData.push({title,emoji,desc,localId,order:videosData.length,id:Date.now()+''});
+        renderVideos(videosData);
+        closeAddVideo();showToast('已保存（仅此设备）');
+      }
+    } catch(err){
+      console.error('upload error',err);
+      showToast('上传失败，检查网络或 Firebase Storage 权限');
+      saveBtn.disabled=false;saveBtn.textContent='添加 ✓';
+      cancelBtn.disabled=false;
+      prog.classList.remove('show');
     }
-    closeAddVideo();showToast('本地视频已添加 ✦（仅此设备可播放）');
   } else {
     const url=document.getElementById('vadd-url').value.trim();
     if(!url||!parseVideoUrl(url)){showToast('请输入有效的视频链接（B站或YouTube）');return;}
@@ -2017,7 +2083,12 @@ async function saveAddVideo(){
 async function deleteVideo(id,e){
   e.stopPropagation();if(!adminUnlocked)return;
   const v=videosData.find(x=>x.id===id);
+  // Clean up IndexedDB (local fallback)
   if(v&&v.localId) await VideoDB.del(v.localId).catch(()=>{});
+  // Clean up Firebase Storage if URL is a Storage URL
+  if(v&&v.url&&v.url.includes('firebasestorage')&&storage){
+    try{await storage.refFromURL(v.url).delete();}catch(e){console.warn('storage delete',e);}
+  }
   if(USE_FIREBASE)await db.collection('videos').doc(id).delete();
   else{videosData=videosData.filter(x=>x.id!==id);renderVideos(videosData);}
   showToast('已删除 ✦');
